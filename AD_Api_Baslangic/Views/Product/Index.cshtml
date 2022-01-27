@@ -1,0 +1,126 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    @*Ürünlerin hepsini getir*@
+    <div class="col-md-12">
+        <hr />
+        <table class="table table-bordered">
+            <tr>
+                <th class="bg-info">Ürünler</th>
+                <th class="bg-info"></th>
+            </tr>
+            <tr>
+                <td class="col-md-6"><input type="submit" name="name" value="Ürünleri Getir" id="UrunleriGetir" class="btn btn-primary" /></td>
+                <td id="Urunler" class="col-md-6"></td>
+            </tr>
+        </table>
+    </div>
+    <hr />
+    @*Şarta bağlı bir ürün getirmek için*@
+    <div class="col-md-12">
+        <hr />
+
+        <table class="table table-bordered">
+            <tr>
+                <th class="bg-danger">Ürünü Getir</th>
+                <th class="bg-danger"></th>
+            </tr>
+            <tr>
+                <td class="row col-md-8">
+                    <input type="text" name="name" value="Urun Id'sini Giriniz" id="UrunuCagir" class="col-md-10 form-control" />
+                    <input type="submit" name="name" value="Getir" class="btn btn-danger col-md-2" id="UrunuGetir" />
+                </td>
+                <td id="Urun" class="col-md-4"></td>
+            </tr>
+        </table>
+    </div>
+    <hr />
+    @*Ürün Silme*@
+    <div class="col-md-12">
+        <hr />
+        <table class="table table-bordered">
+            <tr>
+                <th class="bg-warning">Ürünü Sil</th>
+            </tr>
+            <tr>
+                <td class="row col-md-8 ">
+                    <input type="text" name="name" value="Urun Id'sini Giriniz" id="UrunGelsin" class="col-md-10 form-control" />
+                    <input type="submit" name="name" value="Sil" class="btn btn-warning col-md-2" id="UrunuSil" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script>
+
+
+    $('#UrunleriGetir').click(function () {
+  
+        $.getJSON('../api/ProductApi/GetAll/').done(function (veri) {
+            var getir = "";
+            $.each(veri, function (key, value) {
+
+                getir += ` <b>  Ürün Id : ${value.ProductId} / Ürün Adı : ${value.ProductName} /  Ürün Fiyatı : ${value.Price} /  Ürün Stoğu : ${value.Stock} </b> <br>`;
+
+            });
+            $('#Urunler').html(getir);
+
+
+        });
+    });
+
+
+    $('#UrunuGetir').click(function () {
+
+        var id = $('#UrunuCagir').val();
+        if (id != "") {
+            var urun = "";
+            $.getJSON('../api/ProductApi/GetProduct/' + id).done(function (deger) {
+                if (deger != null) {
+                    
+                    urun = ` <b>  Ürün Id : ${deger.ProductId} <br> Ürün Adı : ${deger.ProductName} <br>  Ürün Fiyatı : ${deger.Price} <br>  Ürün Stoğu : ${deger.Stock} </b>`;
+                    $('#Urun').html(urun);
+                }
+                else {
+                    alert("Yok");
+                }
+
+            }).fail(function (xhr, options, error) {
+                if (error !=" ") {
+                    alert("İşleminiz gerçekleştirilemedi");
+                }
+            })
+
+        }
+        else {
+            alert("Lütfen bir ürün idsi giriniz");
+        }
+
+    });
+
+
+    $('#UrunuSil').click(function () {
+        var urunid = $('#UrunGelsin').val();
+        if (urunid != "") {
+            $.getJSON('../api/ProductApi/GetDelete/' + urunid).done(function (yapi) {
+                alert(yapi);
+
+            }).fail(function (xhr, option, error) {
+                if (option) {
+                    alert("id'deki ürün bulunamadı");
+                }
+            });
+        }
+        else {
+            alert("Lütfen bir ürün id'si giriniz");
+        }
+
+    });
+
+
+</script>
